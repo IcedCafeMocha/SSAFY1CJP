@@ -13,7 +13,7 @@
               location="left"
               permanent
               temporary
-              scrim="rgba(110, 0, 0, 0.5)"
+              scrim="true, rgba(110, 0, 0, 0.5)"
               hide-overlay
               rounded="lg"
               border="0"

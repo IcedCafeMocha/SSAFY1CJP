@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User login(String id, String password) {
 		System.out.println("입력받은 id야!: "+id);
-		System.out.println("입력받은 password야!: "+id);
+		System.out.println("입력받은 password야!: "+password);
 		
 		System.out.println(passwordEncoder.encode(password));
 		

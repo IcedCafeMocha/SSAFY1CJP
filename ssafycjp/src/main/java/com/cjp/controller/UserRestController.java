@@ -1,18 +1,25 @@
 package com.cjp.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cjp.model.dto.User;
 import com.cjp.model.service.UserService;
@@ -23,16 +30,18 @@ import com.cjp.util.JwtUtil;
 public class UserRestController {
 	private static final String SUCCESS = "success";
 	private static final String FAIL = "fail";
-
+	private final ResourceLoader resourceLoader;
 	@Autowired
 	private JwtUtil jwtUtil;
+	
 	
 	@Autowired
 	private UserService userService;
 
 	
-	public UserRestController(UserService userService) {
+	public UserRestController(UserService userService, ResourceLoader resourceLoader) {
 		this.userService = userService;
+		this.resourceLoader = resourceLoader;
 	}
 
 	// 로그인
@@ -64,16 +73,31 @@ public class UserRestController {
 	// 회원가입
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(@RequestBody User user) {
-		System.out.println("signup");
-		user.setEmail("sfy@sfy");
 		User tmp = userService.search(user.getId());
-		System.out.println(tmp);
 		if (tmp == null) {
 			userService.signup(user);
 			return new ResponseEntity<>("Signup successful", HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>("이미 있는 아이디입니다", HttpStatus.CONFLICT);
 		}
+	}
+	// 회원 가입할 때 이미지 들고오기
+	@PostMapping("/userImg")
+	public ResponseEntity<?> userImgUpload(@RequestParam("userId") String id,@RequestParam("file") MultipartFile file, Model model) throws IllegalStateException, IOException {
+		if (file != null && file.getSize() > 0) {
+//			String fileName = file.getOriginalFilename();
+			String fileName = id+".jpg";
+			 String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/upload";  // 애플리케이션 루트 디렉토리를 기준으로 설정
+	        File uploadPath = new File(uploadDir);
+	
+			 if (!uploadPath.exists()) {
+		            uploadPath.mkdirs();  // 디렉토리가 존재하지 않으면 생성
+		        }
+			File destinationFile = new File(uploadPath, fileName);
+			file.transferTo(destinationFile);
+			model.addAttribute("fileName", fileName);
+		}
+		return new ResponseEntity<>("Signup successful", HttpStatus.OK);
 	}
 
 	// 유저 정보 조회

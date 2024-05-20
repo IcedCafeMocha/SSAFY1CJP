@@ -57,7 +57,24 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-
+  const userImgRegist = async (img, userId) => {
+    try {
+      const formData = new FormData();
+      formData.append('userId', userId);
+      formData.append('file', img);
+  
+      await axios({
+        url: `${REST_USER_API}/userImg`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        data: formData
+      });
+    } catch (error) {
+      console.error('이미지 저장 실패:', error);
+    }
+  };
   // const userRegist = function(user) {
   //   console.log('들어와')
   //   console.log(user)
@@ -123,5 +140,5 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { userLogin , loginUserId, userRegist, logout, getUserIdFromToken, getUserInfoFromToken}
+  return { userLogin , userImgRegist, loginUserId, userRegist, logout, getUserIdFromToken, getUserInfoFromToken}
 })
