@@ -207,7 +207,7 @@ public class UserRestController {
 	// 유저 출석 가져오기
 	@GetMapping("/attendance/{userId}")
 	public ResponseEntity<?> getAttendancesByUserId(@PathVariable("userId") String userId) {
-		System.out.println("??");
+		System.out.println(userId+"??");
 		List<Attendance> list = attendanceService.getAttendancesByUserId(userId);
 		System.out.println(list);
 		return new ResponseEntity<>(list, HttpStatus.OK);

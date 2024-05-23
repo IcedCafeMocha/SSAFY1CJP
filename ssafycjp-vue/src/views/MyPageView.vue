@@ -1,104 +1,126 @@
 <template>
-    <TheHeaderNav/>
+  <TheHeaderNav />
+  <div v-if="user">
     <v-app>
       <v-container>
         <v-card class="mx-auto mt-5" max-width="800">
           <v-card-title>
             <h3>회원 정보</h3>
-            <v-col cols="6">
-            </v-col>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>ID: {{ user.id }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-        </v-card-title>
+          </v-card-title>
 
-        <v-card-text>
+          <v-card-text>
             <div class="userInfo">
-            <v-row>
-              <v-col class="text-center">
-                <v-avatar size="300">
-                  <!-- 이미지 가져오기 -->
-                  <img class="profileImg" src="@/assets/오승준_3x4.jpg" alt="Profile">
-                </v-avatar>
-              </v-col>
-            </v-row>
-            <v-card class="mx-auto mt-5 " max-width="400">
-                <v-row>
-                <v-col cols="6">
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title>이름: {{ user.name }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-col>
-              <v-col cols="6" class="text-right">
-                <v-btn @click="editField('name')" color="primary">수정</v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="6">
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title>e-mail: {{ user.email }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-col>
-              <v-col cols="6" class="text-right">
-                <v-btn @click="editField('email')" color="primary">수정</v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="6">
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title>비밀번호</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-col>
-              <v-col cols="6" class="text-right">
-                <v-btn @click="editField('password')" color="primary">수정</v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="6">
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title>나이: {{ user.age }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-col>
-              <v-col cols="6" class="text-right">
-                <v-btn @click="editField('age')" color="primary">수정</v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="6">
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title>목표 체중: {{ user.goalWeight }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-col>
-              <v-col cols="6" class="text-right">
-                <v-btn @click="editField('goalWeight')" color="primary">수정</v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="6">
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title>현재 체중: {{ user.weight }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-col>
-              <v-col cols="6" class="text-right">
-                <v-btn @click="editField('weight')" color="primary">수정</v-btn>
-              </v-col>
-            </v-row>
+              <v-row>
+                <v-col class="text-center">
+                  <v-list-item-title>ID: {{ user.id }}</v-list-item-title>
 
-        </v-card>
+                  <v-avatar size="300">
+                    <!-- 이미지 가져오기 -->
+                    <div class="preview" v-if="previewFlag" alt="Profile">
+                      <img :src="previewImageUrl">
+                    </div>
+                    <img v-else class="profileImg" :src="profileImageUrl" alt="Profile">
+                  </v-avatar>
+                  <div class="button-container">
+                    <v-file-input label="File input" prepend-icon="mdi-camera" variant="underlined"
+                      @change="changePreviewImage"></v-file-input>
+                    <v-btn @click="inputFileUpload(previewImage)" color="primary">수정</v-btn>
+                  </div>
+                </v-col>
+              </v-row>
+              <v-card class="mx-auto mt-5" max-width="400">
+                <v-row>
+                  <v-col cols="6">
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title class="info-item">이름: {{ user.name }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="6" class="text-right">
+                    <v-btn @click="editField('name')" color="primary">수정</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="9">
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title class="info-item">e-mail: {{ user.email }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="3" class="text-right">
+                    <v-btn @click="editField('email')" color="primary">수정</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6">
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title>비밀번호</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="6" class="text-right">
+                    <v-btn @click="editField('password')" color="primary">수정</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6">
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title class="info-item">나이: {{ user.age }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="6" class="text-right">
+                    <v-btn @click="editField('age')" color="primary">수정</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6">
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title v-if="user.goalWeight" class="info-item">목표 체중: {{ user.goalWeight
+                          }}</v-list-item-title>
+                        <v-list-item-title v-else class="info-item">목표 체중: {{ user.goalWeight }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="6" class="text-right">
+                    <v-btn @click="editField('goalWeight')" color="primary">수정</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6">
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title v-if="user.nowWeight" class="info-item">현재 체중: {{ user.nowWeight
+                          }}</v-list-item-title>
+                        <v-list-item-title v-else class="info-item">현재 체중: {{ user.nowWeight }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="6" class="text-right">
+                    <v-btn @click="editField('nowWeight')" color="primary">수정</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6">
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title v-if="user.height" class="info-item">현재 키: {{ user.height
+                          }}</v-list-item-title>
+                        <v-list-item-title v-else class="info-item">현재 키: {{ user.height }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="6" class="text-right">
+                    <v-btn @click="editField('height')" color="primary">수정</v-btn>
+                  </v-col>
+                </v-row>
+
+              </v-card>
             </div>
 
             <v-row class="mt-4">
@@ -110,51 +132,42 @@
                   <v-card-text>
                     <v-row>
                       <v-col cols="6">
-                        <div>현재 체중: {{ user.weight }}</div>
-                      </v-col>
-                      <v-col cols="6" class="text-right">
-                        <v-btn @click="editField('weight')" color="primary">수정</v-btn>
+                        <div>현재 체중: {{ user.nowWeight }}</div>
                       </v-col>
                     </v-row>
                     <v-row class="mt-2">
                       <v-col cols="6">
-                        <div>목표 체중: {{ user.goalweight }}</div>
-                      </v-col>
-                      <v-col cols="6" class="text-right">
-                        <v-btn @click="editField('goalweight')" color="primary">수정</v-btn>
+                        <div>목표 체중: {{ user.goalWeight }} </div>
                       </v-col>
                     </v-row>
-  
                     <v-row class="mt-2">
                       <v-col cols="6">
-                        <div>현재 BMI는:<h2>{{ user.bmi }}</h2> 입니다!</div>
+                        <div>현재 BMI는:<h2>{{ bmi }}</h2> 입니다!</div>
                       </v-col>
-   
+
                     </v-row>
-          
+
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="6">
                 <v-card outlined>
                   <v-card-title>
-                    오늘 하루도 화이팅!!
+                    <div>연속 접속</div>
                   </v-card-title>
                   <v-card-text>
-                    <div>연속 접속</div>
-                    <v-row justify="center" class="mt-2">
+                    <v-row class="mt-2">
                       <v-col cols="6">
-                        <div class="display-2 text-center">{{ user.streak }}</div>
+                        <Attendance />
                       </v-col>
                     </v-row>
-                    <div class="text-center">일차에요!!</div>
                   </v-card-text>
                 </v-card>
               </v-col>
             </v-row>
           </v-card-text>
         </v-card>
-  
+
         <v-dialog v-model="showModal" persistent max-width="400">
           <v-card>
             <v-card-title>
@@ -178,128 +191,97 @@
         </v-dialog>
       </v-container>
     </v-app>
-  </template>
-  
-  <script>
-  import { ref, onMounted } from "vue";
-  import { useUserStore } from "@/stores/user";
-  import router from '@/router';
-  
-  import TheHeaderNav from '@/components/common/TheHeaderNav.vue'
+  </div>
+</template>
 
-  export default {
-  components: {
-    TheHeaderNav
-  },
-  setup() {
-    const userStore = useUserStore();
-    const user = ref({
-      id: '',
-      name: '',
-      email: '',
-      password: '',
-      age: 0,
-      weight: '',
-      goalWeight: '',
-      bmi: '',
-      streak: 0
-    });
-    const showModal = ref(false);
-    const currentField = ref('');
-    const tempValue = ref('');
+<script setup>
+import { ref, onMounted, computed } from "vue";
+import { useUserStore } from "@/stores/user";
+import router from '@/router';
 
-    onMounted(async () => {
-      user.value = await userStore.getUserInfoFromToken();
-      console.log(user.value);
-    });
+import Attendance from '@/components/user/Attendance.vue'
+import TheHeaderNav from '@/components/common/TheHeaderNav.vue'
 
-    const editField = (field) => {
-      currentField.value = field;
-      tempValue.value = user.value[field];
-      showModal.value = true;
-    };
+const store = useUserStore();
+const user = ref(null);
+const showModal = ref(false);
+const currentField = ref('');
+const tempValue = ref('');
+const previewFlag = ref(false)
+const previewImage = ref('');
+const previewImageUrl = ref(''); // 미리보기 URL을 별도로 저장
+const profileImageUrl = ref('');
 
-    const saveChanges = () => {
-      if (currentField.value) {
-        user.value[currentField.value] = tempValue.value;
-        currentField.value = '';
-        tempValue.value = '';
-        showModal.value = false;
-      }
-    };
+const editField = ref((field) => {
+  currentField.value = field;
+  tempValue.value = user.value[field];
+  showModal.value = true;
+})
 
-    return {
-      user,
-      showModal,
-      currentField,
-      tempValue,
-      editField,
-      saveChanges
-    };
+const changePreviewImage = (e) => {
+  const files = event.target?.files
+  if (files.length > 0) {
+    const file = files[0]
+    previewImage.value = file;
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      previewImageUrl.value = e.target.result;
+    }
+    reader.readAsDataURL(file)
+    previewFlag.value = true;
   }
-};
+}
+  const saveChanges = ref(() => {
+    if (currentField.value) {
+      store.saveInfoChanges(user.value.id, currentField.value, tempValue.value)
+      user.value[currentField.value] = tempValue.value;
+      currentField.value = '';
+      tempValue.value = '';
+      showModal.value = false;
+    }
+  })
+  const inputFileUpload = async (event) => {
+    const file = previewImage.value
+    if (file) {
+      await store.updateUserProfileImage(user.value.id, file);
+      // Reload or refresh the user's info if needed
+      user.value = await store.getUserInfoFromToken();
+      profileImageUrl.value = await store.fetchProfileImageUrl(user.value.id);
+    }
+  };
+  const bmi = computed(() => {
+    if (user.value && user.value.nowWeight) {
+      return (user.value.nowWeight / (user.value.height / 100 * user.value.height / 100)).toFixed(2);
+    }
+    return 'N/A';
+  });
+
+  onMounted(async () => {
+    user.value = await store.getUserInfoFromToken();
+    console.log(user.value)
+    profileImageUrl.value = await store.fetchProfileImageUrl(user.value.id);
+    console.log(profileImageUrl.value)
+  });
 
 
+</script>
 
-
-
-  // export default {
-  //   data() {
-  //     return {
-  //       user: {
-  //         id: 'user123',
-  //         name: '홍길동',
-  //         email: 'hong@domain.com',
-  //         password: '********',
-  //         age: 30,
-  //         weight: '70kg',
-  //         goalWeight: '65kg',
-  //         bmi: '22',
-  //         streak: 31,
-  //       },
-  //       showModal: false,
-  //       currentField: '',
-  //       tempValue: '',
-  //       fieldLabels: {
-  //         id: 'ID',
-  //         name: '이름',
-  //         email: 'e-mail',
-  //         password: '비밀번호',
-  //         age: 'age',
-  //         weight: '현재 체중',
-  //         goalWeight: '목표 체중',
-  //         bmi: 'BMI',
-  //         streak: '연속 접속',
-  //       },
-  //       editableFields: ['name', 'email', 'password', 'age', 'weight', 'goalWeight', 'bmi', 'streak']
-  //     };
-  //   },
-  //   methods: {
-  //     editField(field) {
-  //       this.currentField = field;
-  //       this.tempValue = this.user[field];
-  //       this.showModal = true;
-  //     },
-  //     saveChanges() {
-  //       if (this.currentField) {
-  //         this.user[this.currentField] = this.tempValue;
-  //         this.currentField = '';
-  //         this.tempValue = '';
-  //         this.showModal = false;
-  //       }
-  //     }
-  //   }
-  // };
-  </script>
-  
-  <style>
-  .v-avatar img {
-    object-fit: cover;
-  }
-
-  .userInfo {
-    display: flex;
+<style>
+.v-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.userInfo {
+  display: flex;
   justify-content: space-around;
   align-items: center;
-  }
-  </style>
+}
+.button-container {
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 10px; /* 버튼 사이의 간격 */
+  padding: 0 30px; /* 좌우로 20px의 padding을 추가 */
+}
+</style>
