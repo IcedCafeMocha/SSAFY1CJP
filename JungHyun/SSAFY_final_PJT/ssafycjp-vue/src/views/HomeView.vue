@@ -1,5 +1,4 @@
 <template>
-  <div>
     <div class="container">
       <div class="left-pane">
         <LoginForm />
@@ -8,7 +7,6 @@
         <IntroCarousel />
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -45,4 +43,6 @@ import LoginForm from '@/components/common/LoginForm.vue';
   height: 100%;
   flex: 7; /* 비율 7 */
 }
+
+
 </style>

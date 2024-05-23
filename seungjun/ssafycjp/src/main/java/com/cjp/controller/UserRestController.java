@@ -2,15 +2,21 @@ package com.cjp.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +40,10 @@ public class UserRestController {
 	private static final String SUCCESS = "success";
 	private static final String FAIL = "fail";
 	private final ResourceLoader resourceLoader;
+	
+	
+	private final String uploadDir = System.getProperty("user.dir")+ "/src/main/resources/static/upload";
+
 	@Autowired
 	private JwtUtil jwtUtil;
 
@@ -88,35 +98,60 @@ public class UserRestController {
 
 	// 회원 가입할 때 이미지 들고오기
 	@PostMapping("/userImg")
-	public ResponseEntity<?> userImgUpload(@RequestParam("userId") String id, @RequestParam("file") MultipartFile file,
-			Model model) throws IllegalStateException, IOException {
+	public ResponseEntity<?> userImgUpload(@RequestParam("userId") String id, @RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {
 		if (file != null && file.getSize() > 0) {
-//			String fileName = file.getOriginalFilename();
 			String fileName = id + ".jpg";
-			String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/upload"; // 애플리케이션 루트 디렉토리를
-																										// 기준으로 설정
 			File uploadPath = new File(uploadDir);
 
 			if (!uploadPath.exists()) {
 				uploadPath.mkdirs(); // 디렉토리가 존재하지 않으면 생성
 			}
+			
 			File destinationFile = new File(uploadPath, fileName);
 			file.transferTo(destinationFile);
-			model.addAttribute("fileName", fileName);
+			
+			String imageUrl = uploadDir+fileName;
+			
+			
+			return new ResponseEntity<>(imageUrl, HttpStatus.OK);
 		}
-		return new ResponseEntity<>("Signup successful", HttpStatus.OK);
+		return new ResponseEntity<>("File upload failed", HttpStatus.BAD_REQUEST);
 	}
+	
+	@GetMapping("/userImg/{filename}")
+    public ResponseEntity<Resource> getUserImage(@PathVariable String filename) {
+        try {
+            Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
+            
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (MalformedURLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 	// 유저 정보 조회
 	@GetMapping("/info")
-	public ResponseEntity<User> getUserInfo(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String token) {
 		String id = jwtUtil.getIdFromToken(token);
 		System.out.println(id);
 		User user = userService.search(id);
-		System.out.println(user.getId());
+
+		String fileName = user.getId() + ".jpg";
+		Resource file = userService.loadAsResource(fileName);
 		// 감춰야 할 정보는 여기서 제거 가능! (ex. 비밀번호 부분을 null 값으로 변경)
 		user.setPassword(null);
-		return new ResponseEntity<>(user, HttpStatus.OK);
+
+		return ResponseEntity.ok()
+	            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+	            .body(file);
 	}
 
 //	@GetMapping("/{id}")

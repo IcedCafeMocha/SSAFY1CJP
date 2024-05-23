@@ -1,5 +1,5 @@
 <template>
-  <div class="replies-section">
+  <div class="rereplies-section">
     <h4>답글</h4>
     <div v-for="rereply in rereplies" :key="rereply.id" class="rereply">
       <div class="rereply-meta">
@@ -14,12 +14,14 @@
         <button class="btn btn-outline-danger btn-sm" @click="deleteRereply(rereply.id)">삭제</button>
       </div>
     </div>
-    <div class="form-floating mb-3">
-      <textarea class="form-control" id="newRereply" placeholder="답글을 입력하세요" style="height: 100px" v-model="newRereply"></textarea>
-      <label for="newReply">새로운 답글</label>
-    </div>
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-outline-primary" @click="addRereply">등록</button>
+    <div v-if="writeRereply">
+      <div class="form-floating mb-3">
+        <textarea class="form-control" id="newRereply" placeholder="답글을 입력하세요" style="height: 100px" v-model="newRereply"></textarea>
+        <label for="newRereply">새로운 답글</label>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-outline-primary" @click="addRereply">등록</button>
+      </div>
     </div>
   </div>
 </template>
@@ -28,14 +30,15 @@
 import { ref, onMounted } from 'vue';
 import { useBoardStore } from '@/stores/board';
 
-
-
 const props = defineProps({
   replyId: {
     type: Number,
     required: true
   },
-  
+  writeRereply: {
+    type: Boolean,
+    required: true
+  }
 });
 
 const store = useBoardStore();
@@ -43,7 +46,6 @@ const rereplies = ref([]);
 const newRereply = ref("");
 
 const fetchRereplies = async () => {
-
   try {
     rereplies.value = await store.getRereplies(props.replyId);
   } catch (error) {
@@ -63,7 +65,7 @@ const addRereply = async () => {
 
 const editRereply = (rereplyId) => {
   console.log(`Edit reply ${rereplyId}`);
-  // 댓글 수정 로직 추가
+  // 답글 수정 로직 추가
 };
 
 const deleteRereply = async (rereplyId) => {
@@ -71,7 +73,7 @@ const deleteRereply = async (rereplyId) => {
     await store.deleteRereply(rereplyId);
     fetchRereplies();
   } catch (error) {
-    console.error('댓글 삭제에 실패했습니다:', error);
+    console.error('답글 삭제에 실패했습니다:', error);
   }
 };
 

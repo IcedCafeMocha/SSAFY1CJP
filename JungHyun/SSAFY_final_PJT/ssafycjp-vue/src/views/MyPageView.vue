@@ -258,6 +258,7 @@ const changePreviewImage = (e) => {
 
   onMounted(async () => {
     user.value = await store.getUserInfoFromToken();
+    console.log(user.value)
     profileImageUrl.value = await store.fetchProfileImageUrl(user.value.id);
     console.log(profileImageUrl.value)
   });

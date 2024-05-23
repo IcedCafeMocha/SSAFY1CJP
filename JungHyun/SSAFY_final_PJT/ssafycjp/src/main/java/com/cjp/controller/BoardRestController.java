@@ -121,8 +121,9 @@ public class BoardRestController {
 
 	// 댓글 가져오기
 	@GetMapping("/board/{boardId}/reply")
-	public ResponseEntity<List<Reply>> replyList(@PathVariable("boardId") int boardId) {
-		List<Reply> list = replyService.getReplyList(boardId);
+	public ResponseEntity<List<Reply>> replyList(@PathVariable("boardId") String boardId) {
+		int bId = Integer.parseInt(boardId);
+		List<Reply> list = replyService.getReplyList(bId);
 		return new ResponseEntity<List<Reply>>(list, HttpStatus.OK);
 	}
 

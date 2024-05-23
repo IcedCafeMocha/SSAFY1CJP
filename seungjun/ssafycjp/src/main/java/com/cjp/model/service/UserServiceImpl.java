@@ -3,6 +3,8 @@ package com.cjp.model.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private final UserDao userDao;
+	
+    @Autowired
+    private ResourceLoader resourceLoader;
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -95,6 +100,20 @@ public class UserServiceImpl implements UserService {
 		userDao.updateUserInfo(id,field,changeValue);
 		
 	}
+	
+    public Resource loadAsResource(String fileName) {
+        try {
+            Resource resource = resourceLoader.getResource("classpath:static/upload/" + fileName);
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("Could not read the file!");
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Could not load the file: " + fileName, ex);
+        }
+    }
+
 
 
 

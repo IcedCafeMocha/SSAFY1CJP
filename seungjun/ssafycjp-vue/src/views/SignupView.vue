@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { h, ref } from 'vue';
+import { computed, h, ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 
 const store = useUserStore();
@@ -83,7 +83,7 @@ const userRegist = function(){
     store.userImgRegist(img.value, user.value.id)
   }
 }
-  
+const imageUrl = computed(()=>store.userImgUrl)
 </script>
 
 <style scoped>

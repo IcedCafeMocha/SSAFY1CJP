@@ -5,10 +5,9 @@ import axios from 'axios'
 import axiosInstance from '@/utils/interceptor'
 
 const REST_USER_API = `http://localhost:8080/user`
-
 export const useUserStore = defineStore('user', () => {
   const loginUserId = ref(null)
-  
+  const imageUrl = ref('');
   const userLogin = async (id, password) => {
    
     try {
@@ -152,19 +151,23 @@ export const useUserStore = defineStore('user', () => {
   const getUserInfoFromToken = async () => {
     try {
       const token = sessionStorage.getItem('Authorization')
-    
+  
       if (token) {
-      
+
         const response = await axiosInstance.get(`${REST_USER_API}/info`, {
           headers: { Authorization: `Bearer ${token}` }
         })
+        console.log(response.data)
+        imageUrl.value = `http://localhost:8080/uploads/${response.data.fileName}`;
+        console.log(imageUrl.value)
         return response.data
       }
+      router.push({ name: 'Error401' })
       throw new Error('토큰이 없습니다.')
     } catch (error) {
       console.error('사용자 정보 가져오기 실패:', error)
     }
   }
 
-  return { userLogin , userImgRegist, saveInfoChanges,loginUserId, userRegist, logout, getUserIdFromToken, getUserInfoFromToken}
+  return { userLogin , userImgRegist, imageUrl, saveInfoChanges,loginUserId, userRegist, logout, getUserIdFromToken, getUserInfoFromToken}
 })

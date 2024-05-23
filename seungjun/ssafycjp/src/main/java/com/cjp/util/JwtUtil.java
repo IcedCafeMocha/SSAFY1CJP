@@ -61,11 +61,11 @@ public class JwtUtil {
 	
 	// 토큰에서 정보 추출
 	public String getIdFromToken(String token) {
+		System.out.println("토큰에서 정보 추출 들어왔어!");
 		if(token != null) {
 			String[] input = token.split(" ");
 			token = input[1];			
 		}
-		System.out.println("토큰에서 정보 추출 들어왔어!");
 		Jws<Claims> claims = Jwts.parserBuilder()
 				.setSigningKey(secretkey)
 				.build()

@@ -1,56 +1,57 @@
 <template>
   <div class="replies-section">
     <h4>댓글</h4>
-    <div v-for="reply in replies" :key="reply.id" class="reply">
-      <div class="reply-meta">
-        <span class="reply-writer">{{ reply.writer }}</span>
-        <span class="reply-date">{{ formatDate(reply.regDate) }}</span>
+    <div >
+      <div v-for="reply in replies" :key="reply.id" class="reply">
+        <div class="reply-meta">
+          <span class="reply-writer">{{ reply.writer }}</span>
+          <span class="reply-date">{{ formatDate(reply.regDate) }}</span>
+        </div>
+        <div class="reply-content">
+          <p>{{ reply.content }}</p>
+        </div>
+        <div class="reply-actions">
+          <button class="btn btn-outline-secondary" @click="toggleWriteRereply(reply.id)">답글 작성</button>
+          <button class="btn btn-like" :class="{ 'liked': reply.hasLiked }" @click="toggleLike(reply.id)">
+            좋아요 {{ reply.like }}
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" @click="editReply(reply.id)">수정</button>
+          <button class="btn btn-outline-danger btn-sm" @click="deleteReply(reply.id)">삭제</button>
+        </div>
+        <RereplyList :replyId="reply.id" :writeRereply="reply.writeRereply" />
       </div>
-      <div class="reply-content">
-        <p>{{ reply.content }}</p>
+      <div class="form-floating mb-3">
+        <textarea class="form-control" id="newReply" placeholder="댓글을 입력하세요" style="height: 100px"
+          v-model="newReply"></textarea>
+        <label for="newReply">댓글</label>
       </div>
-      <div class="reply-actions">
-        <button class="btn btn-like" :class="{'liked': hasLiked}" @click="toggleLike(reply.id)">
-          좋아요 {{ reply.like }}
-        </button>
-        <button class="btn btn-outline-secondary btn-sm" @click="editReply(reply.id)">수정</button>
-        <button class="btn btn-outline-danger btn-sm" @click="deleteReply(reply.id)">삭제</button>
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-outline-primary" @click="addReply">등록</button>
       </div>
-      <RereplyList :replyId="reply.id" />
     </div>
-    <div class="form-floating mb-3">
-      <textarea class="form-control" id="newReply" placeholder="댓글을 입력하세요" style="height: 100px" v-model="newReply"></textarea>
-      <label for="newReply">댓글</label>
-    </div>
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-outline-primary" @click="addReply">등록</button>
-    </div>
-
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useBoardStore } from '@/stores/board';
-import RereplyList from '@/components/Reply/RereplyList.vue'
-
+import RereplyList from '@/components/Reply/RereplyList.vue';
 
 const props = defineProps({
   boardId: {
     type: Number,
     required: true
-  },
-  
+  }
 });
 
 const store = useBoardStore();
 const replies = ref([]);
 const newReply = ref("");
-const hasLiked = ref(false) 
 
 const fetchReplies = async () => {
   try {
-    replies.value = await store.getReplies(props.boardId);
+    const fetchedReplies = await store.getReplies(props.boardId);
+    replies.value = fetchedReplies.map(reply => ({ ...reply, hasLiked: false, writeRereply: false }));
   } catch (error) {
     console.error('댓글을 가져오는 데 실패했습니다:', error);
   }
@@ -81,19 +82,24 @@ const deleteReply = async (replyId) => {
 };
 
 const toggleLike = async (replyId) => {
-try {
-   console.log(replyId)
-  if (hasLiked.value) {
-    await store.dislikeReply(replyId)
-  } else {
-    await store.likeReply(replyId)
+  try {
+    const reply = replies.value.find(r => r.id === replyId);
+    if (reply.hasLiked) {
+      await store.dislikeReply(replyId);
+    } else {
+      await store.likeReply(replyId);
+    }
+    reply.hasLiked = !reply.hasLiked;
+    fetchReplies(); // 추천 후 게시글 정보를 다시 가져와서 업데이트
+  } catch (error) {
+    console.error('좋아요 상태 변경에 실패했습니다:', error);
   }
-  hasLiked.value = !hasLiked.value
-  fetchReplies() // 추천 후 게시글 정보를 다시 가져와서 업데이트
-} catch (error) {
-  console.error('좋아요 상태 변경에 실패했습니다:', error)
-}
-}
+};
+
+const toggleWriteRereply = (replyId) => {
+  const reply = replies.value.find(r => r.id === replyId);
+  reply.writeRereply = !reply.writeRereply;
+};
 
 const formatDate = (dateArray) => {
   if (!dateArray || !Array.isArray(dateArray)) return '';
@@ -148,33 +154,15 @@ onMounted(() => {
   color: #000;
 }
 
-.like-section {
-display: flex;
-align-items: center;
-justify-content: center;
-flex-grow: 1;
-}
-
 .btn-like {
-font-size: 0.9rem;
-background-color: #fff;
-border: 1px solid #28a745;
-color: #28a745;
+  font-size: 0.9rem;
+  background-color: #fff;
+  border: 1px solid #28a745;
+  color: #28a745;
 }
 
 .btn-like.liked {
-background-color: #28a745;
-color: #fff;
-}
-
-.like-count {
-margin-left: 10px;
-font-size: 1rem;
-color: #28a745;
-}
-
-.action-buttons {
-display: flex;
-gap: 10px;
+  background-color: #28a745;
+  color: #fff;
 }
 </style>

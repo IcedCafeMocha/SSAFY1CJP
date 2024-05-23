@@ -15,15 +15,18 @@
                   <v-list-item-title>ID: {{ user.id }}</v-list-item-title>
                   
                   <v-avatar size="300">
-                    <!-- 이미지 가져오기 -->
+                    <!-- 바꾸려는 이미지 가져오기 -->
                     <div class="preview" v-if="previewFlag">
-                      <img :src="previewImage">
+               
+                      <img :src="previewImage" alt="Profile Preview">
                     </div>
-                    <img v-else class="profileImg" src="@/assets/오승준_3x4.jpg" alt="Profile">
+                    <!-- 회원 정보에서 기존 이미지를 -->
+                    <img v-else class="profileImg" :src="imageUrl" alt="Profile">
+        
                   </v-avatar>
                   <hr>
                   <input type="file" accept="image/*" @change="changePreviewImage"/>
-                  <input type="file" id="profileimg" @change="inputFileUpload" accept="image/*">
+                  <v-btn color="primary" @click="uploadProfileImage">프로필 사진 변경</v-btn>
                 </v-col>
               </v-row>
               <v-card class="mx-auto mt-5" max-width="400">
@@ -200,7 +203,9 @@ const user = ref(null);
 const showModal = ref(false);
 const currentField = ref('');
 const tempValue = ref('');
-const previewFlag = ref(false)
+const previewFlag = ref(false);
+const previewImage = ref('');
+const imageUrl = computed(() => store.imageUrl);
 
 const editField = ref((field) => {
   currentField.value = field;
@@ -208,9 +213,8 @@ const editField = ref((field) => {
   showModal.value = true;
 })
 
-const previewImage = ref('');
 const changePreviewImage = (e) =>{
-  const files = event.target?.files
+  const files = e.target.files;
   if(files.length>0){
     const file = files[0]
     const reader = new FileReader()
@@ -220,9 +224,19 @@ const changePreviewImage = (e) =>{
     }
 
     reader.readAsDataURL(file)
+    previewFlag.value = true;
   }
-  previewFlag.value = true;
 }
+
+const uploadProfileImage = async () => {
+  const fileInput = document.querySelector('input[type="file"]');
+  const file = fileInput.files[0];
+  console.log(file)
+  if (file) {
+    await store.userImgRegist(file,user.value.id);
+    previewFlag.value = false; // 업로드 후 미리보기 초기화
+  }
+};
 
 const saveChanges = ref(() => {
   if (currentField.value) {

@@ -2,6 +2,8 @@ package com.cjp.model.service;
 
 import java.util.List;
 
+import org.springframework.core.io.Resource;
+
 import com.cjp.model.dto.User;
 
 public interface UserService {
@@ -29,4 +31,6 @@ public interface UserService {
 	public void changeUserWeight(String id, String field, double changedWeight);
 
 	public void changeUserInfo(String id, String field, String changeValue);
+	
+	 public Resource loadAsResource(String fileName);
 }

@@ -14,6 +14,7 @@ public class User {
 	private double height;
 	private double goalWeight;
 	private double nowWeight;
+	private String imageUrl;
 	
 	public User() {
 	}
@@ -36,6 +37,15 @@ public class User {
 		this.goalWeight = goalWeight;
 		this.nowWeight = nowWeight;
 		this.height = height;
+	}
+
+	
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	public double getHeight() {
