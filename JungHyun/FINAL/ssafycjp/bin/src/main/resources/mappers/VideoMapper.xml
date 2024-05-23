@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.project.dao.VideoDao">
+
+	<select id="selectOne">
+		SELECT * FROM SSAFIT_video WHERE title = #{title}
+	</select>
+
+	<select id="selectAll">
+		SELECT * FROM SSAFIT_video
+	</select>
+	
+	<select id="search"  resultType="Video" parameterType="SearchCondition">
+		SELECT * FROM SSAFIT_video
+		<if test="word != null">
+			WHERE part LIKE concat('%', #{word}, '%')
+			ORDER BY viewCnt DESC
+		</if>
+	</select>
+</mapper>
