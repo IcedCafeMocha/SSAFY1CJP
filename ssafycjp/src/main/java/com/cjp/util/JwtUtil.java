@@ -49,7 +49,6 @@ public class JwtUtil {
 				.build()
 				.parseClaimsJws(token);
 			// 유효한 토큰
-			System.out.println("유효한 토큰!");
 			return true;
 		} catch (Exception e) {
 			// 유효하지 않은 토큰
@@ -65,12 +64,11 @@ public class JwtUtil {
 			String[] input = token.split(" ");
 			token = input[1];			
 		}
-		System.out.println("토큰에서 정보 추출 들어왔어!");
 		Jws<Claims> claims = Jwts.parserBuilder()
 				.setSigningKey(secretkey)
 				.build()
 				.parseClaimsJws(token);
-		System.out.println(claims.getBody().getSubject());
+		System.out.println("ID: "+claims.getBody().getSubject());
 		return claims.getBody().getSubject();
 	}
 }

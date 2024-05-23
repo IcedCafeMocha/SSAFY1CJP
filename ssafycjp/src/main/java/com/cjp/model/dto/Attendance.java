@@ -3,9 +3,10 @@ package com.cjp.model.dto;
 import java.time.LocalDateTime;
 
 public class Attendance {
-	private Long id;
+    private Long id;
     private String userId;
     private LocalDateTime date;
+    private String dateString; // 문자열로 변환된 날짜
 
     // Getters and setters omitted for brevity
 
@@ -32,5 +33,12 @@ public class Attendance {
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
-}
 
+    public String getDateString() {
+        return dateString;
+    }
+
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
+    }
+}

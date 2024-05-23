@@ -1,6 +1,7 @@
 package com.cjp.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,17 @@ public class BoardServiceImpl implements BoardService {
 	public BoardServiceImpl(BoardDao boardDao) {
 		this.boardDao = boardDao;
 	}
-
+	
+	// 전체 게시글 조회
 	@Override
 	public List<Board> getBoardList() {
 		return boardDao.selectAll();
+	}
+	
+	// 특정 게시판 게시글 조회
+	@Override
+	public List<Board> getBoardListByPostBoardId(int postBoardId){
+		return boardDao.selectByPostBoardId(postBoardId);
 	}
 
 	@Override
@@ -59,17 +67,37 @@ public class BoardServiceImpl implements BoardService {
 		return boardDao.search(searchCondition);
 	}
 	
+	// 좋아요 증가
 	@Transactional
 	@Override
 	public void updateLikeUp(String userId,int boardId) {
-		boardDao.upLike(userId,boardId);
+		boardDao.insertBoardLike(userId, boardId);
+		boardDao.updateBoardLike(boardId);
 	}
 	
+	// 좋아요 감소
 	@Transactional
 	@Override
 	public void updateLikeDown(String userId,int boardId) {
-		boardDao.downLike(userId,boardId);
-		
+		boardDao.deleteBoardLike(userId, boardId);
+		boardDao.updateBoardDislike(boardId);
 	}
-
+	
+	// 전체 게시판 이름 조회
+	@Override
+	public List<String> getNames() {
+        return boardDao.getPostboardNames();
+    }
+	
+	// 해당 아이디 좋아요 여부 확인
+	@Override
+	public boolean checkBoardLiked(String userId, int boardId) {
+		return boardDao.hasUserLikedBoard(userId, boardId);	
+	}
+	
+	// 해당 게시판의 게시글 말머리 목록 조회
+	@Override
+    public List<Map<String, Object>> getCategoriesByPostBoardId(int postBoardId) {
+        return boardDao.selectCategoriesByPostBoardId(postBoardId);
+    }
 }

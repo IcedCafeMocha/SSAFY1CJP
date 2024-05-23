@@ -1,85 +1,78 @@
 <template>
-    <v-app>
-      <v-main>
-        <v-container>
-          <div class="main-layout" @mouseleave="drawer = false">
-            <div
-              class="hover-area"
-              @mouseover="drawer = true"
-            ></div>
-            <v-navigation-drawer
-              v-model="drawer"
-              location="left"
-              permanent
-              temporary
-              hide-overlay
-              rounded="lg"
-              border="0"
-              class="custom-drawer"
-            >
-              <v-list>
-                <v-list-item
-                  v-for="(item, index) in items"
-                  :key="index"
-                  @click="navigateToBoard(item.title)"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-navigation-drawer>
-            <div class="content">
-            </div>
-          </div>
-        </v-container>
-      </v-main>
-    </v-app>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
-  
-  const items = ref([
-    { title: '베스트 글' },
-    { title: '전체 게시글' },
-    { title: '자유 게시판' },
-    { title: '오운완' },
-    { title: '다이어트 일기' },
-    { title: '운동 함께 모임' },
-    { title: '새로운 액티비티 추천' },
-  ]);
-  
-  const drawer = ref(false);
-  
-  const router = useRouter();
-  const navigateToBoard = (boardName) => {
-    router.push({ name: '', params: { 게시판 } });
-  };
-  </script>
-  
-  <style scoped>
-  .main-layout {
-    display: flex;
-     /* 전체 화면 높이 */
-    height: 100vh;
-    width: 100px;
-  }
-  
-  .hover-area {
-    position: absolute;
-    left: 0px;
-    width: 50px;
-    height: 100%;
-    z-index: 10;
-  }
-  .custom-drawer{
-    background-color: rgb(241, 241, 241);
-  }
-  .v-application {
-    margin-top: 40px;
-  }
+  <v-navigation-drawer
+    v-model="drawer"
+    location="left"
+    temporary
+    hide-overlay
+    rounded="lg"
+    border="0"
+    class="custom-drawer"
+    @mouseleave="drawer = false"
+  >
+  <v-list v-if="isLoading">
+      <v-progress-circular indeterminate color="primary" />
+    </v-list>
+    <v-list v-else>
+      <!-- postboardNames를 v-for로 렌더링 -->
+      <v-list-item
+        v-for="(name, index) in postboardNames"
+        :key="index"
+        @click="selectBoard(index + 1)"
+      >
+        <v-list-item-content>
+          <v-list-item-title>{{ name }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+  <div
+    class="hover-area"
+    @mouseover="drawer = true"
+  ></div>
+</template>
 
-  </style>
-  
+<script setup>
+import { ref, watch } from 'vue';
+
+const drawer = ref(false);
+const isLoading = ref(true);
+const emits = defineEmits(['select-board']);
+
+const props = defineProps({
+  postboardNames: Array
+});
+
+// const items = ref([
+//   { id: 1, title: '게시판1' },
+//   { id: 2, title: '게시판2' },
+//   // 추가 게시판 항목을 여기에 추가
+// ]);
+
+watch(() => props.postboardNames, (newValue) => {
+  if (newValue.length > 0) {
+    isLoading.value = false;
+  }
+}, { immediate: true });
+
+const selectBoard = (postboardId) => {
+  emits('select-board', postboardId);
+};
+</script>
+
+<style scoped>
+.hover-area {
+  position: fixed;
+  left: 0;
+  top: 70px; /* 헤더 높이 */
+  width: 20px;
+  height: calc(100vh - 70px); /* 헤더 높이 뺀 전체 높이 */
+  z-index: 10;
+  background-color: transparent; /* 디버깅을 위해 색상을 추가할 수 있음 */
+}
+
+.custom-drawer {
+  top: 70px; /* 헤더 높이 */
+  height: calc(100vh - 70px); /* 헤더 높이 뺀 전체 높이 */
+  background-color: rgb(241, 241, 241);
+}
+</style>

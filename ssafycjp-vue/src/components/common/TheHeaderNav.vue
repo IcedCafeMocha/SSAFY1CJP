@@ -3,15 +3,15 @@
     <header class="header">
       <nav class="nav-left">
         <RouterLink to="/main">
-          <div class="imgContainer">
+          <div class="imgContainer" @click="goMain">
             <img src="@/assets/logo5.png" alt="Main Image" class="main-image">
           </div>
         </RouterLink>
       </nav>
 
       <nav class="nav-center">
-        <RouterLink :to="{ name: 'boardList' }">BoardList</RouterLink>
-        <RouterLink :to="{ name: 'boardCreate' }">BoardCreate</RouterLink>
+        <RouterLink :to="{ name: 'exerciseRecommendation' }">운동 추천</RouterLink>
+        <RouterLink :to="{ name: 'mypage' }">AI 트레이너와의 상담</RouterLink>
       </nav>
 
       <nav class="info">
@@ -33,18 +33,24 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useUserStore } from "@/stores/user";
-import router from '@/router';
+import { useRouter } from 'vue-router';
 
 const Ustore = useUserStore();
 const user = ref(null);
+const router = useRouter();
 
 const logout = function() {
   Ustore.logout();
   router.push({ name: 'home' });
 };
 
+const goMain = function() {
+  router.push({ name: 'main' });
+};
+
 onMounted(async () => {
   user.value = await Ustore.getUserInfoFromToken();
+  console.log("TheHeaderNav에 가져온 user 정보야! 여기서 이름만 가져다 쓸거야!")
   console.log(user.value);
 });
 </script>
@@ -62,7 +68,7 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px; /* 좌우 패딩 추가 */
-  background-color: #7fcdcd; /* 밝은 파스텔 색상 */
+  background-color: #9fe4e4;
 }
 
 .nav-left {
@@ -77,7 +83,7 @@ onMounted(async () => {
 }
 
 .nav-center a {
-  margin: 0 15px; /* 링크 간 간격 추가 */
+  margin: 0 5%;
 }
 
 .navb a, .nav-center a, .info a {
@@ -123,7 +129,7 @@ a:hover {
 }
 
 .main-image {
-  max-height: 140px; /* 이미지 높이 증가 */
+  max-height: 140px; 
   object-fit: contain;
 }
 

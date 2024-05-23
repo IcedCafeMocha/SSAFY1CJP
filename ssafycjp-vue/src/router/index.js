@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
-import BoardView from '@/views/BoardView.vue'
 import SignupView from '@/views/SignupView.vue'
 import MyPageView from '@/views/MyPageView.vue'
 import MainView from '@/views/MainView.vue'
@@ -11,6 +10,9 @@ import BoardUpdate from '@/components/board/BoardUpdate.vue'
 import BoardDetail from '@/components/board/BoardDetail.vue'
 
 import Error401 from '@/views/Error401.vue';
+import FailedWithLogin from '@/views/FailedWithLogin.vue';
+
+import ExerciseRecommendation from '@/components/GPT/ExerciseRecommendation.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,44 +32,65 @@ const router = createRouter({
       name: 'mypage',
       component: MyPageView
     },
-    { 
-      path: '/401', 
-      name: 'Error401', 
-      component: Error401 
+    {
+      path: '/401',
+      name: 'Error401',
+      component: Error401
+    },
+    {
+      path: '/FailedWithLogin',
+      name: 'FailedWithLogin',
+      component: FailedWithLogin
     },
     {
       path: '/main',
       name: 'main',
-      component: MainView
-    },
-    {
-      path: '/board',
-      name: 'board',
-      component: BoardView,
+      component: MainView,
       children: [
-        {
-          path: '',
-          name: 'boardList',
-          component: BoardList
+        { 
+          path: '', 
+          name: 'allBoardList', 
+          component: BoardList,
         },
-        {
-          path: 'create',
-          name: 'boardCreate',
-          component: BoardCreate
+        { 
+          path: ':postboardId', 
+          name: 'boardList', 
+          component: BoardList,
         },
-        {
-          path: 'update',
-          name: 'boardUpdate',
-          component: BoardUpdate
+        { 
+          path: ':postboardId/create',
+          name: 'boardCreate', 
+          component: BoardCreate 
         },
-        {
-          path: ':id',
-          name: 'boardDetail',
-          component: BoardDetail
+        { 
+          path: 'update/:id', 
+          name: 'boardUpdate', 
+          component: BoardUpdate 
         },
-      ]
+        { 
+          path: 'detail/:id', 
+          name: 'boardDetail', 
+          component: BoardDetail 
+        },
+        { 
+          path: 'exercise-recommendation', 
+          name: 'exerciseRecommendation', 
+          component: ExerciseRecommendation 
+        },
+      ],
     },
   ]
 })
+
+// 라우터 가드
+// 유효 토큰 검증해서 로그인 되어 있는 상태면 로그인 페이지로 가지 못하게끔 한다.
+router.beforeEach((to, from, next) => {
+  const token = sessionStorage.getItem('Authorization');
+  if (to.name === 'home' && token) {
+    next({ name: 'main' });
+  } else {
+    next();
+  }
+});
 
 export default router

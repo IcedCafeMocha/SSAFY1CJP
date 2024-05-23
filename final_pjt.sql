@@ -1,5 +1,5 @@
 -- 초기화용
-DROP DATABASE IF EXISTS `final_pjt`;
+-- DROP DATABASE IF EXISTS `final_pjt`;
 
 CREATE DATABASE IF NOT EXISTS `final_pjt` CHAR SET utf8mb4;
 USE `final_pjt`;
@@ -146,8 +146,26 @@ INSERT INTO `postboard` (title) VALUES ('게시판1'), ('게시판2');
 INSERT INTO `category` (postboard_id, name) VALUES
 (1, '일반'), (1, '공지'), (1, '질문'), (2, '일반'), (2, '공지');
 
+-- INSERT INTO `board` (category, postboard_id, title, content, writer, `like`) VALUES
+-- (1, 1, "좋아요 테스트3", "좋아요 눌러주세요!!", "test", 150);
+
 INSERT INTO `board` (category, postboard_id, title, content, writer) VALUES
-( 2, 1, "게시판1 공지사항입니다.", "ㅎㅇㅎㅇ~", "test");
+( 2, 1, "게시판1 공지사항입니다.", "ㅎㅇㅎㅇ~", "test"),
+( 1, 1, "안녕하세요~~", "ㅎㅇㅎㅇ~", "test"),
+( 1, 1, "ㅎㅇㅎㅇ", "하이하이", "test"),
+( 1, 1, "점심메뉴추천좀", "ㅎㅇㅎㅇ~", "test"),
+( 1, 1, "123456789", "ㅎㅇㅎㅇ~", "test"),
+( 1, 1, "일반게시판입니다!", "ㅎㅇㅎㅇ~", "test"),
+( 1, 1, "ㅁㄴㅇㄹㅁㄴㅇㄹㅁㄴㅇㄹ", "ㅎㅇㅎㅇ~", "test"),
+( 3, 1, "질문있어요!!", "ㅎㅇㅎㅇ~", "test"),
+( 2, 2, "게시판2 공지사항입니다.", "ㅎㅇㅎㅇ~", "test"),
+( 1, 2, "안녕하세요~", "ㅎㅇㅎㅇ~", "test"),
+( 1, 2, "ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ", "ㅎㅇㅎㅇ~", "test"),
+( 1, 2, "일반 게시판입니다!", "ㅎㅇㅎㅇ~", "test"),
+( 1, 2, "안 녕 하 세 요", "ㅎㅇㅎㅇ~", "test"),
+( 1, 2, "123456789", "ㅎㅇㅎㅇ~", "test");
+
+-- delete from `board` where id = 1;
 
 SELECT * FROM `user`;
 SELECT * FROM `postboard`;

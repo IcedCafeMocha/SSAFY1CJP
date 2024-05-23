@@ -1,6 +1,8 @@
 package com.cjp.model.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,9 +33,13 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	public List<Attendance> getAttendancesByUserId(String userId) {
-		return attendanceDao.getAttendancesByUserId(userId);
-	}
+    public List<Attendance> getAttendancesByUserId(String userId) {
+        List<Attendance> attendanceList = attendanceDao.getAttendancesByUserId(userId);
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        return attendanceList.stream()
+            .peek(att -> att.setDateString(att.getDate().format(formatter)))
+            .collect(Collectors.toList());
+    }
 
 
 }

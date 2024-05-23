@@ -1,6 +1,6 @@
 gi<template>
     <v-carousel
-      height="600"
+      height="400"
       show-arrows="hover"
       cycle
       hide-delimiter-background
@@ -35,11 +35,11 @@ gi<template>
           'deep-purple accent-4',
         ],
         slides: [
-          '1',
-          '2',
-          '3',
-          '4',
-          '5!!',
+          '야호오오오',
+          '기분좋다아ㅏ',
+          '드가자ㅏ',
+          '운동하자ㅏ',
+          '기모띠!!',
         ],
       }
     },

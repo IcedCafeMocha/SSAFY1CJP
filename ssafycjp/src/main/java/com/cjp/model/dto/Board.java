@@ -11,6 +11,7 @@ public class Board {
 	// 게시판 타입
 	private int postBoardId;
 	private int category;
+	private String categoryName;
 	private String title;
 	private String content;
 	private String writer;
@@ -20,16 +21,25 @@ public class Board {
 
 	
 	public Board() {
-		
+		regDate = LocalDateTime.now();
 	}
 	
-	public Board(int postBoardId, int category, String title, String content, String writer, LocalDateTime regDate) {
+//	public Board(int postBoardId, int category, String title, String content, String writer, LocalDateTime regDate) {
+//		this.postBoardId = postBoardId;
+//		this.category = category;
+//		this.title = title;
+//		this.content = content;
+//		this.writer = writer;
+//		regDate = LocalDateTime.now();
+//	}
+	
+	public Board(int postBoardId, int category, String title, String content,
+			LocalDateTime regDate) {
 		this.postBoardId = postBoardId;
 		this.category = category;
 		this.title = title;
 		this.content = content;
-		this.writer = writer;
-		this.regDate = LocalDateTime.now();
+		regDate = LocalDateTime.now();
 	}
 
 	public int getId() {
@@ -54,6 +64,14 @@ public class Board {
 
 	public void setCategory(int category) {
 		this.category = category;
+	}
+
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
 	}
 
 	public String getTitle() {
@@ -106,9 +124,8 @@ public class Board {
 
 	@Override
 	public String toString() {
-		return "Board [id=" + id + ", postBoardId=" + postBoardId + ", category=" + category + ", title=" + title
-				+ ", content=" + content + ", writer=" + writer + ", like=" + like + ", regDate=" + regDate
-				+ ", viewCnt=" + viewCnt + "]";
+		return "Board [id=" + id + ", postBoardId=" + postBoardId + ", category=" + category + ", categoryName="
+				+ categoryName + ", title=" + title + ", content=" + content + ", writer=" + writer + ", like=" + like
+				+ ", regDate=" + regDate + ", viewCnt=" + viewCnt + "]";
 	}
-
 }

@@ -48,12 +48,20 @@ public class ReplyServiceImpl implements ReplyService {
 		// DB에서 라이크 1 증가
 		// 좋아요는 userid랑 게시글 id랑 엮여서 unique값이므로 1계당 1좋아요만 가능
 		replyDao.likeUp(userId,replyId);
+		replyDao.updateReplylike(replyId);
 	}
 
 	@Override
 	public void updateLikeDown(String userId,int replyId) {
 		// DB에서 라이크 1 감소
 		replyDao.LikeDown(userId,replyId);
+		replyDao.updateReplylike(replyId);
 	}
+	
+	@Override
+	public boolean checkReplyLiked(String userId, int replyId) {
+		return replyDao.hasUserLikedReply(userId, replyId);
+	}
+
 
 }

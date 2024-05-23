@@ -36,13 +36,14 @@ public class UserRestController {
 	private final ResourceLoader resourceLoader;
 	@Autowired
 	private JwtUtil jwtUtil;
-
+	
+	
 	@Autowired
 	private UserService userService;
 	@Autowired
 	private AttendanceService attendanceService;
-
-	public UserRestController(UserService userService, ResourceLoader resourceLoader, AttendanceService attendanceService) {
+	
+	public UserRestController(UserService userService, ResourceLoader resourceLoader,AttendanceService attendanceService) {
 		this.userService = userService;
 		this.resourceLoader = resourceLoader;
 		this.attendanceService = attendanceService;
@@ -54,7 +55,7 @@ public class UserRestController {
 		System.out.println("로그인 시도: " + user.getId());
 		HttpStatus status = null;
 		Map<String, Object> result = new HashMap<>();
-
+		
 		// 사용자 인증
 		User checkUser = userService.login(user.getId(), user.getPassword());
 
@@ -85,40 +86,34 @@ public class UserRestController {
 			return new ResponseEntity<>("이미 있는 아이디입니다", HttpStatus.CONFLICT);
 		}
 	}
-
 	// 회원 가입할 때 이미지 들고오기
 	@PostMapping("/userImg")
-	public ResponseEntity<?> userImgUpload(@RequestParam("userId") String id, @RequestParam("file") MultipartFile file,
-			Model model) throws IllegalStateException, IOException {
+	public ResponseEntity<?> userImgUpload(@RequestParam("userId") String id,@RequestParam("file") MultipartFile file, Model model) throws IllegalStateException, IOException {
 		if (file != null && file.getSize() > 0) {
 //			String fileName = file.getOriginalFilename();
-			String fileName = id + ".jpg";
-			String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/upload"; // 애플리케이션 루트 디렉토리를
-																										// 기준으로 설정
-			File uploadPath = new File(uploadDir);
-
-			if (!uploadPath.exists()) {
-				uploadPath.mkdirs(); // 디렉토리가 존재하지 않으면 생성
-			}
+			String fileName = id + "_profile.jpg";
+			 String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/upload";  // 애플리케이션 루트 디렉토리를 기준으로 설정
+	        File uploadPath = new File(uploadDir);
+	
+			 if (!uploadPath.exists()) {
+		            uploadPath.mkdirs();  // 디렉토리가 존재하지 않으면 생성
+		        }
 			File destinationFile = new File(uploadPath, fileName);
 			file.transferTo(destinationFile);
-			model.addAttribute("fileName", fileName);
 		}
 		return new ResponseEntity<>("Signup successful", HttpStatus.OK);
 	}
 
 	// 유저 정보 조회
 	@GetMapping("/info")
-	public ResponseEntity<User> getUserInfo(@RequestHeader("Authorization") String token) {
-		String id = jwtUtil.getIdFromToken(token);
-		System.out.println(id);
-		User user = userService.search(id);
-		System.out.println(user.getId());
-		// 감춰야 할 정보는 여기서 제거 가능! (ex. 비밀번호 부분을 null 값으로 변경)
-		user.setPassword(null);
-		return new ResponseEntity<>(user, HttpStatus.OK);
-	}
-
+    public ResponseEntity<User> getUserInfo(@RequestHeader("Authorization") String token) {
+        String id = jwtUtil.getIdFromToken(token);
+        User user = userService.search(id);
+        // 감춰야 할 정보는 여기서 제거 가능! (ex. 비밀번호 부분을 null 값으로 변경)
+        user.setPassword(null);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+	
 //	@GetMapping("/{id}")
 //	public ResponseEntity<User> userInfo(@PathVariable("id") String id) {
 //		System.out.println("들어왔어!");
@@ -127,57 +122,95 @@ public class UserRestController {
 //		return new ResponseEntity<User>(user, HttpStatus.OK);
 //
 //	}
-
+	
 	// 테스트용
 	@GetMapping("/getList")
 	public ResponseEntity<?> getList() {
 		List<User> list = userService.getUserList();
 		System.out.println(list);
 		return new ResponseEntity<>(list, HttpStatus.OK);
-
 	}
-
+	
 	// 회원 정보 수정
 	@PutMapping("/changeInfo")
 	public ResponseEntity<?> changeInfo(@RequestBody Map<String, String> params) {
-		String id = params.get("userId");
-		String field = params.get("field");
-		String changeValue = params.get("changeValue");
+	    String id = params.get("userId");
+	    String field = params.get("field");
+	    String changeValue = params.get("changeValue");
+		
 
-		if (field.equals("age")) {
+		if(field.equals("age")) {
 			int changedAge = Integer.parseInt(changeValue);
-			userService.changeUserAge(id, field, changedAge);
-		} else if (field.equals("goalWeight") || field.equals("nowWeight")) {
+			userService.changeUserAge(id,field,changedAge);
+		} else if(field.equals("goalWeight")||field.equals("nowWeight")) {
 			double changedWeight = Double.parseDouble(changeValue);
-			userService.changeUserWeight(id, field, changedWeight);
+			userService.changeUserWeight(id,field,changedWeight);
 		} else {
-			userService.changeUserInfo(id, field, changeValue);
+			userService.changeUserInfo(id,field,changeValue);
+		}
+		
+		 return new ResponseEntity<>(HttpStatus.OK);
+
+	}
+	// 프로필 사진 가져오기
+		@GetMapping("/profileImage/{userId}")
+		public ResponseEntity<String> getProfileImageUrl(@PathVariable String userId) {
+		    String fileName = userId + "_profile.jpg";
+		    String filePath = "/upload/" + fileName;
+		    File imgFile = new File(System.getProperty("user.dir") + "/src/main/resources/static" + filePath);
+		    if (imgFile.exists()) {
+		    	String fullUrl = "http://localhost:8080" + filePath; // 서버 주소와 파일 경로를 결합
+		        return new ResponseEntity<>(fullUrl, HttpStatus.OK);
+		    }
+		    return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
 		}
 
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+		// 회원 프로필 사진 수정
+		@PutMapping("/updateProfileImage")
+		public ResponseEntity<?> updateProfileImage(@RequestParam("userId") String id, @RequestParam("file") MultipartFile file) {
+		    try {
+		        if (file.isEmpty()) {
+		            return new ResponseEntity<>("No file uploaded", HttpStatus.BAD_REQUEST);
+		        }
 
+		        String fileName = id + "_profile.jpg";  // 이 규칙을 통일
+		        String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/upload";
+		        File uploadPath = new File(uploadDir);
+
+		        if (!uploadPath.exists()) {
+		            uploadPath.mkdirs();
+		        }
+
+		        File destinationFile = new File(uploadPath, fileName);
+		        file.transferTo(destinationFile);
+
+		        return new ResponseEntity<>("Profile image updated successfully", HttpStatus.OK);
+		    } catch (Exception e) {
+		        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		    }
+		}
+
+	// 출석
 	@PostMapping("/attendance")
 	public ResponseEntity<?> createAttendance(@RequestBody Attendance attendance) {
 		attendanceService.createAttendance(attendance);
 		return new ResponseEntity<>(HttpStatus.OK);
-		
 	}
-	
+
+	// 츌석 가져오기
 	@GetMapping("/attendance")
 	public ResponseEntity<?> getAllAttendances() {
 		List<Attendance> list = attendanceService.getAllAttendances();
 		return new ResponseEntity<>(list, HttpStatus.OK);
-		
 	}
-	
+
+	// 유저 출석 가져오기
 	@GetMapping("/attendance/{userId}")
 	public ResponseEntity<?> getAttendancesByUserId(@PathVariable("userId") String userId) {
 		System.out.println("??");
 		List<Attendance> list = attendanceService.getAttendancesByUserId(userId);
 		System.out.println(list);
 		return new ResponseEntity<>(list, HttpStatus.OK);
-		
 	}
 
 	// 성공적으로 회원가입이 되었어!

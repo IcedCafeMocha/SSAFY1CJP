@@ -1,68 +1,84 @@
 <template>
-    <div class="text-center">
-        <div class="row align-items-center">
-            <div class="col-2">
-                <select class="form-select" v-model="searchInfo.key">
-                    <option value="none">전체</option>
-                    <option value="writer">글쓰니</option>
-                    <option value="title">제목</option>
-                    <option value="content">내용</option>
-                </select>
-            </div>
-            <div class="col-6">
-                <input type="text" class="form-control" v-model="searchInfo.word" />
-            </div>
-            <div class="col-2">
-                <div class="form-check form-check-inline">
-                    <input v-model="searchInfo.orderBy" class="form-check-input" type="radio" id="title" value="title" />
-                    <label class="form-check-label" for="title"><i class="bi bi-fonts"></i></label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input v-model="searchInfo.orderBy" class="form-check-input" type="radio" id="writer" value="writer" />
-                    <label class="form-check-label" for="writer"><i class="bi bi-person-fill"></i></label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input v-model="searchInfo.orderBy" class="form-check-input" type="radio" id="viewCnt"
-                        value="view_cnt" />
-                    <label class="form-check-label" for="viewCnt"><i class="bi bi-eye-fill"></i></label>
-                </div>
-            </div>
-            <div class="col-1">
-                <div @click="sortChange">
-                    <span v-if="searchInfo.orderByDir === 'asc'">
-                        <i class="bi bi-arrow-up-right-square-fill"></i>
-                    </span>
-                    <span v-else><i class="bi bi-arrow-down-right-square-fill"></i></span>
-                </div>
-            </div>
-            <div class="col-1">
-                <button class="btn btn-outline-warning" @click="searchBoardList">검색</button>
-            </div>
+    <div class="search-container">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <button
+            class="btn btn-pastel dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            {{ searchTypeLabel }}
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#" @click.prevent="setSearchType('title')">제목</a>
+            <a class="dropdown-item" href="#" @click.prevent="setSearchType('content')">내용</a>
+            <a class="dropdown-item" href="#" @click.prevent="setSearchType('writer')">작성자</a>
+          </div>
         </div>
+        <input type="text" v-model="searchText" placeholder="검색어를 입력하세요" class="form-control" />
+        <button @click="onSearch" class="btn btn-pastel">검색</button>
+      </div>
     </div>
-</template>
+  </template>
   
-<script setup>
-import { ref } from "vue";
-import { useBoardStore } from "@/stores/board";
-
-const store = useBoardStore();
-const searchInfo = ref({
-    key: "none",
-    word: "",
-    orderBy: "none",
-    orderByDir: "asc",
-});
-const searchBoardList = function () {
-    store.searchBoardList(searchInfo.value);
-};
-
-const sortChange = function () {
-    if (searchInfo.value.orderByDir === "asc")
-        searchInfo.value.orderByDir = "desc";
-    else searchInfo.value.orderByDir = "asc";
-};
-</script>
+  <script setup>
+  import { ref, computed } from 'vue';
   
-<style scoped></style>
+  const searchText = ref('');
+  const searchType = ref('title');
+  const searchTypeLabel = computed(() => {
+    if (searchType.value === 'title') return '제목';
+    if (searchType.value === 'content') return '내용';
+    if (searchType.value === 'writer') return '작성자';
+    return '검색 유형';
+  });
+  
+  const setSearchType = (type) => {
+    searchType.value = type;
+  };
+  
+  const onSearch = () => {
+    // 검색 로직 추가
+    console.log(`Searching for ${searchText.value} in ${searchType.value}`);
+  };
+  </script>
+  
+  <style scoped>
+  .search-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .input-group {
+    display: flex;
+  }
+  
+  .input-group-prepend {
+    margin-right: 5px;
+  }
+  
+  .form-control {
+    flex: 1;
+  }
+  
+  .dropdown-toggle::after {
+    margin-left: 0.5em;
+  }
+  
+  .btn-pastel {
+    background-color: #c3fcfc; 
+    border-color: #c3fcfc; 
+    color: #000;
+  }
+  
+  .btn-pastel:hover {
+    background-color: #c3fcfc;
+    border-color: #c3fcfc;
+    color: #000;
+  }
+  </style>
   

@@ -20,8 +20,6 @@ public class JwtInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		
-		System.out.println("JwtInterceptor: preHandle 호출");
-		
 		// 클라이언트는 서버에게 실제 요청을 보내려고 했을 때 사전 요청을 보내서 서버가 현재 요청을 수락할 수 있는지 확인
 		// 그게 OPTIONS 요청
 		if(request.getMethod().equals("OPTIONS")) {
